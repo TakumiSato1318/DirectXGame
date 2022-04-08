@@ -6,7 +6,9 @@ using namespace DirectX;
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
+	delete sprite;
+    delete model;}
 
 void GameScene::Initialize() {
 
@@ -14,9 +16,34 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
+	texturehandle=TextureManager::Load("mario.jpg");
+	sprite=Sprite::Create(texturehandle,{100,50});
+	model=Model::Create();
+	worldtransform.Initialize();
+	viewprojection.Initialize();
+	sounddatahandle=audio_->LoadWave("se_sad03.wav");
+	audio_->PlayWave(sounddatahandle);
+	voicehandle=audio_->PlayWave(sounddatahandle,true);
 }
 
-void GameScene::Update() {}
+void GameScene::Update() {
+XMFLOAT2 position=sprite->GetPosition();
+position.x+=2.0;
+position.y+=1.0;
+sprite->SetPosition(position);
+
+if (input_->TriggerKey(DIK_SPACE)) {
+	//
+	audio_->StopWave(voicehandle);
+}
+//変数の値をインクリメント
+value++;
+//値を含んだ文字列
+std::string strdebug=std::string("value:")+
+std::to_string(value);
+//デバッグテキストの表示
+debugText_->Print(strdebug,50,50,1.0);
+}
 
 void GameScene::Draw() {
 
@@ -30,7 +57,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
+	sprite->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -44,6 +71,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	model->Draw(worldtransform,viewprojection,texturehandle);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
