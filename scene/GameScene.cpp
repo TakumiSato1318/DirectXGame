@@ -19,18 +19,22 @@ void GameScene::Initialize() {
 	texturehandle=TextureManager::Load("mario.jpg");
 	sprite=Sprite::Create(texturehandle,{100,50});
 	model=Model::Create();
+	worldtransform.scale_={5.0f,5.0f,5.0f};
+	worldtransform.rotation_={2.3,XM_PI/5.5,3.0};
+	worldtransform.translation_ = {10.0, 10.0, 10.0};
 	worldtransform.Initialize();
 	viewprojection.Initialize();
-	sounddatahandle=audio_->LoadWave("se_sad03.wav");
+	/*sounddatahandle=audio_->LoadWave("se_sad03.wav");
 	audio_->PlayWave(sounddatahandle);
-	voicehandle=audio_->PlayWave(sounddatahandle,true);
+	voicehandle=audio_->PlayWave(sounddatahandle,true);*/
+	
 }
 
-void GameScene::Update() {
-XMFLOAT2 position=sprite->GetPosition();
-position.x+=2.0;
-position.y+=1.0;
-sprite->SetPosition(position);
+void GameScene::Update() {/////
+//XMFLOAT2 position=sprite->GetPosition();
+//position.x+=2.0;
+//position.y+=1.0;
+//sprite->SetPosition(position);
 
 if (input_->TriggerKey(DIK_SPACE)) {
 	//
@@ -38,11 +42,11 @@ if (input_->TriggerKey(DIK_SPACE)) {
 }
 //変数の値をインクリメント
 value++;
-//値を含んだ文字列
-std::string strdebug=std::string("value:")+
+//値を含んだ文字列/////////////////
+/*std::string strdebug=std::string("value:")+
 std::to_string(value);
 //デバッグテキストの表示
-debugText_->Print(strdebug,50,50,1.0);
+debugText_->Print(strdebug,50,50,1.0);*/
 }
 
 void GameScene::Draw() {
@@ -57,7 +61,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	sprite->Draw();
+	//sprite->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
