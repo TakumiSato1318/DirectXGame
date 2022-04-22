@@ -9,7 +9,8 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete sprite;
-    delete model;}
+    delete model;
+}
 
 void GameScene::Initialize() {
 
@@ -30,7 +31,7 @@ void GameScene::Initialize() {
 	std::uniform_real_distribution<float> posDist(-10.0, 10.0);
 	for (size_t i = 0; i < _countof(worldtransform);i++) {
 		//スケーリング
-		worldtransform[i].scale_ = {2.0f, 2.0f, 2.0f};
+		worldtransform[i].scale_ = {1.0f, 1.0f, 1.0f};
 		//回転
 		worldtransform[i].rotation_ = {rotDist(engine), rotDist(engine), rotDist(engine)};
 		//平行移動
@@ -38,14 +39,26 @@ void GameScene::Initialize() {
 		//初期化
 		worldtransform[i].Initialize();
 	}
+	
 	//カメラ視点座標を設定
-	viewprojection.eye = {0, 0, -10};
+	//viewprojection.eye = {0,0,-10};
 
 	//カメラ注視点座標を設定
-	viewprojection.target = {10, 0, 0};
+	//viewprojection.target ;
 
 	//カメラ上方向ベクトルを設定(45)
-	viewprojection.up = {cosf(XM_PI / 4.0), sinf(XM_PI / 4.0), 0.0f};
+	//viewprojection.up ;
+
+	//カメラ垂直方向視野角を設定
+	viewprojection.fovAngleY = XMConvertToRadians(10.0);
+
+	//アスペクト比を設定
+	//viewprojection.aspectRatio = 1.0;
+	//ニアクリップ距離を設定
+	viewprojection.nearZ = 52.0;
+	//ファークリップ距離を設定
+	viewprojection.farZ = 53.0;
+	
 
 	//ビュープロジェクションの初期化
 	viewprojection.Initialize();
@@ -74,6 +87,7 @@ std::to_string(value);
 //デバッグテキストの表示
 debugText_->Print(strdebug,50,50,1.0);*/
 
+/*
 //視点移動処理
 {
 	//視点の移動ベクトル
@@ -154,6 +168,44 @@ debugText_->Print(strdebug,50,50,1.0);*/
 	debugText_->Printf(
 	  "up:(%f,%f,%f)", viewprojection.up.x, viewprojection.up.y,
 	  viewprojection.up.z);
+}
+*/
+
+//FoV変更処理
+{
+	//上キーで視野角が広がる
+	if (input_->PushKey(DIK_W)) {
+		viewprojection.fovAngleY += 0.01;
+		viewprojection.fovAngleY = min(viewprojection.fovAngleY, XM_PI);
+		//
+	} else if (input_->PushKey(DIK_S)) {
+		viewprojection.fovAngleY -= 0.01;
+		viewprojection.fovAngleY = max(viewprojection.fovAngleY, 0.01);
+	}
+
+	//行列の再計算
+	viewprojection.UpdateMatrix();
+
+	//デバッグ用表示
+	debugText_->SetPos(50, 110);
+	debugText_->Printf("fovAngleY(Degree):%f", XMConvertToDegrees(viewprojection.fovAngleY));
+}
+
+//クリップ距離変更処理
+{
+	//上下キーでニアクリップ距離を増減
+	if (input_->PushKey(DIK_UP)) {
+		viewprojection.nearZ += 0.1;
+	} else if (input_->PushKey(DIK_DOWN)) {
+		viewprojection.nearZ -= 0.1;
+	}
+
+	//行列の再計算
+	viewprojection.UpdateMatrix();
+
+	//デバッグ用表示
+	debugText_->SetPos(50, 130);
+	debugText_->Printf("nearZ:%f", viewprojection.nearZ);
 }
 }
 
